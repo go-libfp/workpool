@@ -10,8 +10,7 @@ type WorkerPool struct {
 	size int64 
 } 
 
-
-
+// run function as goroutine onto pool 
 func (pool *WorkerPool) Run(f func()) {
 	 
 	ctx := context.Background()
@@ -25,13 +24,12 @@ func (pool *WorkerPool) Run(f func()) {
 	}()
 }
 
-
+// Spawns function onto worker pool and returns a future / channel 
 func Spawn[T any](pool *WorkerPool, f func() T)  chan T {
 
 
 
-	outCh := make(chan T) 
-	
+	outCh := make(chan T, 1) 	
 	f1 := func() {
 		outCh <- f()
 	}
@@ -39,7 +37,6 @@ func Spawn[T any](pool *WorkerPool, f func() T)  chan T {
 	pool.Run(f1)
 	return outCh 
 } 
-
 
 
 func Create(n_workers int) WorkerPool {
@@ -56,7 +53,7 @@ func (pool *WorkerPool) Wait() {
 }
 
 
-
+/* map list of tasks on to worker pool and outputs results as stream */
 func Map[T, U any](wp *WorkerPool, ch chan T, f func(x T) U) chan U {
 	out := make(chan U, wp.size)
 	
@@ -76,7 +73,7 @@ func Map[T, U any](wp *WorkerPool, ch chan T, f func(x T) U) chan U {
 	}
 
 	go func() {
-		w.Done() 
+		w.Wait() 
 		close(out)
 	}()
 
