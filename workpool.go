@@ -1,5 +1,4 @@
-package gopool 
-
+package workpool
 import "golang.org/x/sync/semaphore"
 import "context"
 import "sync"

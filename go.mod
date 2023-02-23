@@ -1,4 +1,4 @@
-module github.com/nobody/gopool
+module github.com/go-libfp/workpool
 
 go 1.19
 
